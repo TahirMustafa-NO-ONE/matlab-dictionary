@@ -390,163 +390,177 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       opacity: _heroFadeAnimation,
       child: SlideTransition(
         position: _heroSlideAnimation,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: 0.96),
-                const Color(0xFFF4F8FF),
-                const Color(0xFFFFF7E5),
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: navy.withValues(alpha: 0.1),
-                blurRadius: 34,
-                offset: const Offset(0, 18),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FadeTransition(
-                opacity: _chipFadeAnimation,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(999),
-                    gradient: LinearGradient(
-                      colors: [
-                        gold.withValues(alpha: 0.18),
-                        amber.withValues(alpha: 0.12),
-                      ],
-                    ),
-                  ),
-                  child: const Text(
-                    'Colorful. Focused. Modern.',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF8D5C00),
-                    ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isCompact = constraints.maxWidth < 430;
+            final logoSize = isCompact ? 96.0 : 118.0;
+
+            final textBlock = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Learn MATLAB terms in a way that feels polished and alive.',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    height: 1.05,
+                    letterSpacing: isCompact ? -0.6 : -0.9,
+                    fontSize: isCompact ? 30 : null,
                   ),
                 ),
-              ),
-              const SizedBox(height: 22),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Learn MATLAB terms in a way that feels polished and alive.',
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                height: 1.05,
-                                letterSpacing: -0.9,
-                              ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          'The new design takes its energy from your logo with deep ocean blues, bright golden highlights, soft glassy surfaces, and gentle animations.',
-                          style: TextStyle(
-                            color: navy.withValues(alpha: 0.78),
-                            fontSize: 15.5,
-                            height: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: [
-                            _InfoPill(
-                              icon: Icons.auto_stories_rounded,
-                              label: 'Dictionary-first UI',
-                              color: royalBlue,
-                            ),
-                            _InfoPill(
-                              icon: Icons.animation_rounded,
-                              label: 'Animated hero',
-                              color: gold,
-                            ),
-                            _InfoPill(
-                              icon: Icons.gradient_rounded,
-                              label: 'Logo palette',
-                              color: deepBlue,
-                            ),
-                          ],
-                        ),
-                      ],
+                const SizedBox(height: 14),
+                Text(
+                  'The new design takes its energy from your logo with deep ocean blues, bright golden highlights, soft glassy surfaces, and gentle animations.',
+                  style: TextStyle(
+                    color: navy.withValues(alpha: 0.78),
+                    fontSize: isCompact ? 14.5 : 15.5,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    _InfoPill(
+                      icon: Icons.auto_stories_rounded,
+                      label: 'Dictionary-first UI',
+                      color: royalBlue,
+                    ),
+                    _InfoPill(
+                      icon: Icons.animation_rounded,
+                      label: 'Animated hero',
+                      color: gold,
+                    ),
+                    _InfoPill(
+                      icon: Icons.gradient_rounded,
+                      label: 'Logo palette',
+                      color: deepBlue,
+                    ),
+                  ],
+                ),
+              ],
+            );
+
+            final animatedLogo = AnimatedBuilder(
+              animation: Listenable.merge([
+                _floatingController,
+                _introController,
+              ]),
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, _floatAnimation.value),
+                  child: Transform.scale(
+                    scale: _logoScaleAnimation.value,
+                    child: child,
+                  ),
+                );
+              },
+              child: Container(
+                width: logoSize,
+                height: logoSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      gold.withValues(alpha: 0.98),
+                      amber.withValues(alpha: 0.98),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: gold.withValues(alpha: 0.36),
+                      blurRadius: 28,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [deepBlue, navy],
                     ),
                   ),
-                  const SizedBox(width: 18),
-                  AnimatedBuilder(
-                    animation: Listenable.merge([
-                      _floatingController,
-                      _introController,
-                    ]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(0, _floatAnimation.value),
-                        child: Transform.scale(
-                          scale: _logoScaleAnimation.value,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 118,
-                      height: 118,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            gold.withValues(alpha: 0.98),
-                            amber.withValues(alpha: 0.98),
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: gold.withValues(alpha: 0.36),
-                            blurRadius: 28,
-                            spreadRadius: 2,
-                            offset: const Offset(0, 14),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [deepBlue, navy],
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        child: Image.asset('assets/logo.png'),
-                      ),
-                    ),
+                  padding: const EdgeInsets.all(10),
+                  child: Image.asset('assets/logo.png'),
+                ),
+              ),
+            );
+
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.96),
+                    const Color(0xFFF4F8FF),
+                    const Color(0xFFFFF7E5),
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: navy.withValues(alpha: 0.1),
+                    blurRadius: 34,
+                    offset: const Offset(0, 18),
                   ),
                 ],
               ),
-            ],
-          ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FadeTransition(
+                    opacity: _chipFadeAnimation,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: LinearGradient(
+                          colors: [
+                            gold.withValues(alpha: 0.18),
+                            amber.withValues(alpha: 0.12),
+                          ],
+                        ),
+                      ),
+                      child: const Text(
+                        'Colorful. Focused. Modern.',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF8D5C00),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  if (isCompact) ...[
+                    Align(alignment: Alignment.centerRight, child: animatedLogo),
+                    const SizedBox(height: 18),
+                    textBlock,
+                  ] else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: textBlock),
+                        const SizedBox(width: 18),
+                        animatedLogo,
+                      ],
+                    ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
