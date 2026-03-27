@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -103,60 +105,18 @@ class HomePage extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 560),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        height: 82,
-                        width: 82,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(26),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [gold, const Color(0xFFFFAF1E)],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: gold.withValues(alpha: 0.35),
-                              blurRadius: 22,
-                              offset: const Offset(0, 12),
-                            ),
-                          ],
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            color: navy,
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          child: Image.asset('assets/logo.png'),
-                        ),
+                      _GlassAppBar(
+                        navy: navy,
+                        gold: gold,
                       ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'MATLAB Dictionary',
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.6,
-                            ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Search any MATLAB term',
-                        style: TextStyle(
-                          color: navy.withValues(alpha: 0.7),
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 26),
                       Container(
                         padding: const EdgeInsets.all(22),
                         decoration: BoxDecoration(
@@ -251,6 +211,95 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _GlassAppBar extends StatelessWidget {
+  const _GlassAppBar({
+    required this.navy,
+    required this.gold,
+  });
+
+  final Color navy;
+  final Color gold;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(32),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.42),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.55),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: navy.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 14),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                height: 82,
+                width: 82,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(26),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [gold, const Color(0xFFFFAF1E)],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: gold.withValues(alpha: 0.3),
+                      blurRadius: 22,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    color: navy,
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Image.asset('assets/logo.png'),
+                ),
+              ),
+              const SizedBox(height: 22),
+              Text(
+                'MATLAB Dictionary',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.8,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Search any MATLAB term',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: navy.withValues(alpha: 0.72),
+                  fontSize: 15,
+                  height: 1.35,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
