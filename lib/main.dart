@@ -250,52 +250,62 @@ class _GlassAppBar extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Container(
-                height: 82,
-                width: 82,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [gold, const Color(0xFFFFAF1E)],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: gold.withValues(alpha: 0.3),
-                      blurRadius: 22,
-                      offset: const Offset(0, 12),
+              Row(
+                children: [
+                  Container(
+                    height: 82,
+                    width: 82,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(26),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [gold, const Color(0xFFFFAF1E)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: gold.withValues(alpha: 0.3),
+                          blurRadius: 22,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: navy,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        color: navy,
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Image.asset('assets/logo.png'),
+                    ),
                   ),
-                  padding: const EdgeInsets.all(10),
-                  child: Image.asset('assets/logo.png'),
-                ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'MATLAB Dictionary',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.8,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Search any MATLAB term',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: navy.withValues(alpha: 0.72),
-                  fontSize: 15,
-                  height: 1.35,
-                ),
+                  const SizedBox(width: 18),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'MATLAB Dictionary',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.8,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Search any MATLAB term',
+                          style: TextStyle(
+                            color: navy.withValues(alpha: 0.72),
+                            fontSize: 15,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
