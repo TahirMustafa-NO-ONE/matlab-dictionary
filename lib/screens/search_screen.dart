@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/search_provider.dart';
 import '../providers/word_provider.dart';
+import 'saved_words_screen.dart';
 import '../widgets/result_card.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/search_history.dart';
@@ -99,6 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               _HeaderCard(
                                 titleStyle: theme.textTheme.headlineSmall,
                                 bodyStyle: theme.textTheme.bodyMedium,
+                                savedWordsCount: searchProvider.savedWordsCount,
                               ),
                               const SizedBox(height: 18),
                               SearchBarWidget(
@@ -258,10 +260,15 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 class _HeaderCard extends StatelessWidget {
-  const _HeaderCard({required this.titleStyle, required this.bodyStyle});
+  const _HeaderCard({
+    required this.titleStyle,
+    required this.bodyStyle,
+    required this.savedWordsCount,
+  });
 
   final TextStyle? titleStyle;
   final TextStyle? bodyStyle;
+  final int savedWordsCount;
 
   @override
   Widget build(BuildContext context) {
@@ -323,6 +330,22 @@ class _HeaderCard extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              IconButton.filledTonal(
+                tooltip: 'Saved words',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const SavedWordsScreen(),
+                    ),
+                  );
+                },
+                icon: Badge.count(
+                  count: savedWordsCount,
+                  isLabelVisible: savedWordsCount > 0,
+                  child: const Icon(Icons.bookmarks_rounded),
                 ),
               ),
             ],

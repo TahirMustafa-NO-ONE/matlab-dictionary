@@ -19,6 +19,7 @@ class SearchProvider extends ChangeNotifier {
 
   Timer? _debounce;
   SharedPreferences? _preferences;
+  Map<String, Word> _wordIndex = const {};
 
   String _query = '';
   List<Word> _results = const [];
@@ -32,12 +33,27 @@ class SearchProvider extends ChangeNotifier {
   List<String> get autocompleteSuggestions => _autocompleteSuggestions;
   List<String> get searchHistory => _searchHistory;
   bool get hasMoreResults => _results.length > _visibleCount;
+  int get savedWordsCount => _favoriteWords.length;
+
+  List<Word> get savedWords {
+    final words =
+        _favoriteWords
+            .map((entry) => _wordIndex[entry])
+            .whereType<Word>()
+            .toList(growable: false)
+          ..sort(
+            (a, b) =>
+                a.english.toLowerCase().compareTo(b.english.toLowerCase()),
+          );
+    return words;
+  }
 
   List<Word> get visibleResults =>
       _results.take(_visibleCount).toList(growable: false);
 
   Future<void> initialize(List<Word> words) async {
     _searchService.initialize(words);
+    _wordIndex = {for (final word in words) word.english.toLowerCase(): word};
     _preferences ??= await SharedPreferences.getInstance();
     _searchHistory = _preferences?.getStringList(_historyKey) ?? const [];
     final favorites = _preferences?.getStringList(_favoritesKey) ?? const [];
