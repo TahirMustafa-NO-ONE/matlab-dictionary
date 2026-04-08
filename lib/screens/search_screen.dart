@@ -1,14 +1,12 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/search_provider.dart';
 import '../providers/word_provider.dart';
-import 'saved_words_screen.dart';
 import '../widgets/result_card.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/search_history.dart';
+import 'saved_words_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -97,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           sliver: SliverList(
                             delegate: SliverChildListDelegate.fixed([
-                              _HeaderCard(
+                              _HeaderBar(
                                 titleStyle: theme.textTheme.headlineSmall,
                                 bodyStyle: theme.textTheme.bodyMedium,
                                 savedWordsCount: searchProvider.savedWordsCount,
@@ -259,8 +257,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-class _HeaderCard extends StatelessWidget {
-  const _HeaderCard({
+class _HeaderBar extends StatelessWidget {
+  const _HeaderBar({
     required this.titleStyle,
     required this.bodyStyle,
     required this.savedWordsCount,
@@ -273,85 +271,53 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.76),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.62)),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withValues(alpha: 0.10),
-                blurRadius: 26,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Row(
+    return Row(
+      children: [
+        Image.asset(
+          'assets/logo.png',
+          height: 38,
+          width: 38,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: 74,
-                width: 74,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(22),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [colorScheme.primary, colorScheme.tertiary],
+              Text(
+                'MATLAB Dictionary',
+                style: titleStyle?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                ),
+              ),
+              Text(
+                'English to Urdu',
+                style: bodyStyle?.copyWith(
+                  color: theme.textTheme.bodyMedium?.color?.withValues(
+                    alpha: 0.72,
                   ),
-                ),
-                child: Image.asset('assets/logo.png'),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'English to Urdu Dictionary',
-                      style: titleStyle?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Fast search, smart suggestions, and persistent history for 100,000 words.',
-                      style: bodyStyle?.copyWith(
-                        color: theme.textTheme.bodyMedium?.color?.withValues(
-                          alpha: 0.75,
-                        ),
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              IconButton.filledTonal(
-                tooltip: 'Saved words',
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SavedWordsScreen(),
-                    ),
-                  );
-                },
-                icon: Badge.count(
-                  count: savedWordsCount,
-                  isLabelVisible: savedWordsCount > 0,
-                  child: const Icon(Icons.bookmarks_rounded),
                 ),
               ),
             ],
           ),
         ),
-      ),
+        IconButton.filledTonal(
+          tooltip: 'Saved words',
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SavedWordsScreen()),
+            );
+          },
+          icon: Badge.count(
+            count: savedWordsCount,
+            isLabelVisible: savedWordsCount > 0,
+            child: const Icon(Icons.bookmarks_rounded),
+          ),
+        ),
+      ],
     );
   }
 }
