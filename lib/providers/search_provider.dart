@@ -59,12 +59,12 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
 
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      _performSearch(value, clearSuggestions: false);
+      _performSearch(value, clearSuggestions: false, saveToHistory: false);
     });
   }
 
   Future<void> search(String value) async {
-    await _performSearch(value, clearSuggestions: true);
+    await _performSearch(value, clearSuggestions: true, saveToHistory: true);
   }
 
   Future<void> searchFromHistory(String value) async {
@@ -133,6 +133,7 @@ class SearchProvider extends ChangeNotifier {
   Future<void> _performSearch(
     String value, {
     required bool clearSuggestions,
+    required bool saveToHistory,
   }) async {
     final trimmedValue = value.trim();
     _debounce?.cancel();
@@ -149,7 +150,9 @@ class SearchProvider extends ChangeNotifier {
         : _searchService.getAutocompleteSuggestions(trimmedValue);
     _results = _searchService.search(trimmedValue);
     _visibleCount = _pageSize;
-    await _saveSearchHistory(trimmedValue);
+    if (saveToHistory) {
+      await _saveSearchHistory(trimmedValue);
+    }
     notifyListeners();
   }
 
