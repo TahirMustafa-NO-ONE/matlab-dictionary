@@ -59,28 +59,12 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
 
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      search(value);
+      _performSearch(value, clearSuggestions: false);
     });
   }
 
   Future<void> search(String value) async {
-    final trimmedValue = value.trim();
-    _debounce?.cancel();
-    _query = value;
-
-    if (trimmedValue.isEmpty) {
-      _clearSearchState();
-      notifyListeners();
-      return;
-    }
-
-    _autocompleteSuggestions = _searchService.getAutocompleteSuggestions(
-      trimmedValue,
-    );
-    _results = _searchService.search(trimmedValue);
-    _visibleCount = _pageSize;
-    await _saveSearchHistory(trimmedValue);
-    notifyListeners();
+    await _performSearch(value, clearSuggestions: true);
   }
 
   Future<void> searchFromHistory(String value) async {
@@ -144,6 +128,29 @@ class SearchProvider extends ChangeNotifier {
 
     _searchHistory = updatedHistory;
     await _preferences?.setStringList(_historyKey, updatedHistory);
+  }
+
+  Future<void> _performSearch(
+    String value, {
+    required bool clearSuggestions,
+  }) async {
+    final trimmedValue = value.trim();
+    _debounce?.cancel();
+    _query = value;
+
+    if (trimmedValue.isEmpty) {
+      _clearSearchState();
+      notifyListeners();
+      return;
+    }
+
+    _autocompleteSuggestions = clearSuggestions
+        ? const []
+        : _searchService.getAutocompleteSuggestions(trimmedValue);
+    _results = _searchService.search(trimmedValue);
+    _visibleCount = _pageSize;
+    await _saveSearchHistory(trimmedValue);
+    notifyListeners();
   }
 
   void _clearSearchState() {

@@ -59,7 +59,10 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           setState(() {});
           widget.onChanged(value);
         },
-        onSubmitted: widget.onSubmitted,
+        onSubmitted: (value) {
+          FocusScope.of(context).unfocus();
+          widget.onSubmitted(value);
+        },
         decoration: InputDecoration(
           hintText: 'Search English word',
           prefixIcon: Icon(Icons.search_rounded, color: colorScheme.primary),

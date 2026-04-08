@@ -81,40 +81,59 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 900),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                  child: Column(
-                    children: [
-                      _HeaderCard(
-                        titleStyle: theme.textTheme.headlineSmall,
-                        bodyStyle: theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 18),
-                      SearchBarWidget(
-                        query: searchProvider.query,
-                        onChanged: searchProvider.onQueryChanged,
-                        onSubmitted: searchProvider.search,
-                        onClear: searchProvider.clearQuery,
-                      ),
-                      if (searchProvider.query.trim().isNotEmpty &&
-                          searchProvider.autocompleteSuggestions.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: _SuggestionDropdown(
-                            suggestions: searchProvider.autocompleteSuggestions,
-                            onSelected: searchProvider.searchFromHistory,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return CustomScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(
+                            16,
+                            16,
+                            16,
+                            20 + MediaQuery.viewInsetsOf(context).bottom,
+                          ),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate.fixed([
+                              _HeaderCard(
+                                titleStyle: theme.textTheme.headlineSmall,
+                                bodyStyle: theme.textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 18),
+                              SearchBarWidget(
+                                query: searchProvider.query,
+                                onChanged: searchProvider.onQueryChanged,
+                                onSubmitted: searchProvider.search,
+                                onClear: searchProvider.clearQuery,
+                              ),
+                              if (searchProvider.query.trim().isNotEmpty &&
+                                  searchProvider
+                                      .autocompleteSuggestions
+                                      .isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: _SuggestionDropdown(
+                                    suggestions:
+                                        searchProvider.autocompleteSuggestions,
+                                    onSelected: (value) {
+                                      FocusScope.of(context).unfocus();
+                                      searchProvider.searchFromHistory(value);
+                                    },
+                                  ),
+                                ),
+                              const SizedBox(height: 18),
+                            ]),
                           ),
                         ),
-                      const SizedBox(height: 18),
-                      Expanded(
-                        child: _buildBody(
+                        ..._buildBodySlivers(
                           context,
                           wordProvider: wordProvider,
                           searchProvider: searchProvider,
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -124,7 +143,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildBody(
+  List<Widget> _buildBodySlivers(
     BuildContext context, {
     required WordProvider wordProvider,
     required SearchProvider searchProvider,
@@ -132,66 +151,108 @@ class _SearchScreenState extends State<SearchScreen> {
     switch (wordProvider.loadingState) {
       case LoadingState.idle:
       case LoadingState.loading:
-        return const _LoadingSkeleton();
+        return [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            sliver: SliverList.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(bottom: index == 4 ? 0 : 12),
+                  child: const _LoadingCard(),
+                );
+              },
+            ),
+          ),
+        ];
       case LoadingState.error:
-        return _StatusCard(
-          icon: Icons.error_outline_rounded,
-          title: 'Dictionary unavailable',
-          message:
-              wordProvider.errorMessage ??
-              'Something went wrong while loading the dictionary.',
-        );
+        return [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+              child: _StatusCard(
+                icon: Icons.error_outline_rounded,
+                title: 'Dictionary unavailable',
+                message:
+                    wordProvider.errorMessage ??
+                    'Something went wrong while loading the dictionary.',
+              ),
+            ),
+          ),
+        ];
       case LoadingState.loaded:
         if (searchProvider.query.trim().isEmpty) {
-          return SearchHistory(
-            history: searchProvider.searchHistory,
-            onTapHistory: searchProvider.searchFromHistory,
-            onClearHistory: searchProvider.clearHistory,
-          );
+          return [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: SearchHistory(
+                    history: searchProvider.searchHistory,
+                    onTapHistory: searchProvider.searchFromHistory,
+                    onClearHistory: searchProvider.clearHistory,
+                  ),
+                ),
+              ),
+            ),
+          ];
         }
 
         if (searchProvider.results.isEmpty) {
-          return const _StatusCard(
-            icon: Icons.search_off_rounded,
-            title: 'No results found',
-            message:
-                'Try a shorter word, check the spelling, or use the suggestions above.',
-          );
-        }
-
-        return Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: searchProvider.visibleResults.length,
-                itemBuilder: (context, index) {
-                  final word = searchProvider.visibleResults[index];
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: index == searchProvider.visibleResults.length - 1
-                          ? 0
-                          : 12,
-                    ),
-                    child: ResultCard(
-                      word: word,
-                      isFavorite: searchProvider.isFavorite(word.english),
-                      onFavoriteToggle: () =>
-                          searchProvider.toggleFavorite(word),
-                    ),
-                  );
-                },
+          return [
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
+                child: _StatusCard(
+                  icon: Icons.search_off_rounded,
+                  title: 'No results found',
+                  message:
+                      'Try a shorter word, check the spelling, or use the suggestions above.',
+                ),
               ),
             ),
-            if (searchProvider.hasMoreResults)
-              Padding(
-                padding: const EdgeInsets.only(top: 14),
+          ];
+        }
+
+        return [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            sliver: SliverList.builder(
+              itemCount: searchProvider.visibleResults.length,
+              itemBuilder: (context, index) {
+                final word = searchProvider.visibleResults[index];
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: index == searchProvider.visibleResults.length - 1
+                        ? 0
+                        : 12,
+                  ),
+                  child: ResultCard(
+                    word: word,
+                    isFavorite: searchProvider.isFavorite(word.english),
+                    onFavoriteToggle: () => searchProvider.toggleFavorite(word),
+                  ),
+                );
+              },
+            ),
+          ),
+          if (searchProvider.hasMoreResults)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
                 child: FilledButton.tonal(
                   onPressed: searchProvider.loadMoreResults,
                   child: const Text('Load more results'),
                 ),
               ),
-          ],
-        );
+            )
+          else
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+        ];
     }
   }
 }
@@ -363,25 +424,17 @@ class _StatusCard extends StatelessWidget {
   }
 }
 
-class _LoadingSkeleton extends StatelessWidget {
-  const _LoadingSkeleton();
+class _LoadingCard extends StatelessWidget {
+  const _LoadingCard();
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: index == 4 ? 0 : 12),
-          child: Container(
-            height: 110,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.74),
-              borderRadius: BorderRadius.circular(24),
-            ),
-          ),
-        );
-      },
+    return Container(
+      height: 110,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.74),
+        borderRadius: BorderRadius.circular(24),
+      ),
     );
   }
 }

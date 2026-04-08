@@ -75,32 +75,25 @@ class SearchHistory extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          Expanded(
-            child: ListView.builder(
-              itemCount: history.length,
-              itemBuilder: (context, index) {
-                final item = history[index];
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: index == history.length - 1 ? 0 : 10,
-                  ),
-                  child: ActionChip(
-                    avatar: Icon(
-                      Icons.history_rounded,
-                      color: colorScheme.primary,
-                      size: 18,
-                    ),
-                    label: Text(item),
-                    onPressed: () => onTapHistory(item),
-                    side: BorderSide(
-                      color: colorScheme.primary.withValues(alpha: 0.12),
-                    ),
-                    backgroundColor: Colors.white,
-                    labelStyle: theme.textTheme.bodyMedium,
-                  ),
-                );
-              },
-            ),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: history.map((item) {
+              return ActionChip(
+                avatar: Icon(
+                  Icons.history_rounded,
+                  color: colorScheme.primary,
+                  size: 18,
+                ),
+                label: Text(item),
+                onPressed: () => onTapHistory(item),
+                side: BorderSide(
+                  color: colorScheme.primary.withValues(alpha: 0.12),
+                ),
+                backgroundColor: Colors.white,
+                labelStyle: theme.textTheme.bodyMedium,
+              );
+            }).toList(),
           ),
         ],
       ),
